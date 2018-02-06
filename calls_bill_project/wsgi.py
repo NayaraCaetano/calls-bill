@@ -1,5 +1,5 @@
 """
-WSGI config for calls_bill project.
+WSGI config for calls_bill_project project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -10,7 +10,8 @@ https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+from whitenoise.django import DjangoWhiteNoise
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "calls_bill.settings.production")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "calls_bill_project.settings.production")
 
-application = get_wsgi_application()
+application = DjangoWhiteNoise(get_wsgi_application())
