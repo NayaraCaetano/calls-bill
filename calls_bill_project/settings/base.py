@@ -145,3 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
     )
 }
+
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
