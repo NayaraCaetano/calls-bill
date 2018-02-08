@@ -1,2 +1,1 @@
-web: gunicorn calls_bill_project.wsgi --log-file -
-heroku ps:scale worker=1
+web: env > .env; env PYTHONUNBUFFERED=true honcho start -f Procfile.real 2>&1
