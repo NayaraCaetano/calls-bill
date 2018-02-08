@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     #  other
     'rest_framework',
+    'django_celery_results',
 
     #  project
     # ...
@@ -152,7 +153,7 @@ REST_FRAMEWORK = {
     )
 }
 
-
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

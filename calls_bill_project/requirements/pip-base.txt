@@ -1,6 +1,7 @@
 boto3==1.5.24
 celery==4.1.0
 celery==4.1.0
+django-celery-results==1.0.1
 dj-database-url==0.4.2
 django-environ==0.4.4
 Django==2.0.1
