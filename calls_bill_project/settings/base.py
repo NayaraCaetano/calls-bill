@@ -10,12 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+import environ
 import os
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))))
+root = environ.Path(__file__) - 3
+env = environ.Env(
+    AWS_ACCESS_KEY=(str, ''),
+    AWS_SECRET_KEY=(str, '')
+)
+environ.Env.read_env()
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = root()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -42,6 +48,7 @@ INSTALLED_APPS = [
 
     #  other
     'rest_framework',
+    'django_celery_results',
 
     #  project
     # ...
@@ -144,4 +151,24 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
     )
+}
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_CONTENT_ENCODING = 'utf-8'
+CELERY_TASK_ACKS_LATE = True
+CELERY_DEFAULT_QUEUE = 'work-at-olist-dev-celery'
+CELERY_ENABLE_REMOTE_CONTROL = False
+CELERY_SEND_EVENTS = False
+
+CELERY_BROKER_URL = 'sqs://{access_key}:{secret_key}@'.format(
+    access_key=env('AWS_ACCESS_KEY'),
+    secret_key=env('AWS_SECRET_KEY')
+)
+
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'region': 'sa-east-1',
+    'queue_name_prefix': 'work-at-olist-dev-'
 }
