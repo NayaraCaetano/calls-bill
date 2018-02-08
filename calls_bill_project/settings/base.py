@@ -18,7 +18,7 @@ env = environ.Env(
     AWS_ACCESS_KEY=(str, ''),
     AWS_SECRET_KEY=(str, '')
 )
-environ.Env.read_env()
+environ.Env.read_env(str(root('.env')))
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = root()
@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     #  project
-    # ...
+    'calls_bill_project',
 ]
 
 MIDDLEWARE = [
