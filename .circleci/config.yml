@@ -1,0 +1,44 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/work-at-olist
+    docker:
+      - image: circleci/python:3.6.1
+        environment:
+          DJANGO_SETTINGS_MODULE: calls_bill_project.settings.test
+          CC_TEST_REPORTER_ID: 2855a0577a2c26c8786f4bf37650c57685263443a71ff5ee3a28b5b45a909f67
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "calls_bill_project/requirements/pip-base.txt" }}
+      - run:
+          name: "Dependencies"
+          command: |
+            sudo pip install virtualenv
+            python -m virtualenv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "calls_bill_project/requirements/pip-base.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: Setup CodeClimate
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: "Tests"
+          command: |
+            . venv/bin/activate
+            ./cc-test-reporter before-build
+            pytest --ignore=venv/ --junitxml=unit_test_results.xml --cov
+            coverage xml --omit venv/**,**/migrations/**,**/settings/**
+      - run:
+          name: "Send coverage data"
+          command: |
+            ./cc-test-reporter after-build -t coverage.py
+      - store_artifacts:
+          path: coverage.xml
+      - store_test_results:
+          path: unit_test_results.xml
