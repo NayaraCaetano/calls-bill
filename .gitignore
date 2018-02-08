@@ -109,3 +109,6 @@ celerybeat.pid
 
 # jupyter
 **.ipynb
+
+#pytest
+.pytest_cache/

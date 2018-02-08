@@ -18,7 +18,7 @@ env = environ.Env(
     AWS_ACCESS_KEY=(str, ''),
     AWS_SECRET_KEY=(str, '')
 )
-environ.Env.read_env()
+environ.Env.read_env(str(root('.env')))
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = root()
@@ -47,11 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #  other
-    'rest_framework',
     'django_celery_results',
+    'raven.contrib.django.raven_compat',
+    'rest_framework',
 
     #  project
-    # ...
+    'calls_bill_project',
 ]
 
 MIDDLEWARE = [
@@ -171,4 +172,66 @@ CELERY_BROKER_URL = 'sqs://{access_key}:{secret_key}@'.format(
 CELERY_BROKER_TRANSPORT_OPTIONS = {
     'region': 'sa-east-1',
     'queue_name_prefix': 'work-at-olist-dev-'
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(name)s - %(levelname)s'
+                      ' - %(process)d - %(thread)d - %(message)s',
+        },
+        'simple': {
+            'format': '%(levelname)s %(name)s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.raven_compat'
+                     '.handlers.SentryHandler',
+        },
+    },
+    'loggers': {
+        'root': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+        },
+        'oc.storage': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'tasks': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'celery': {
+            'level': 'ERROR',
+            'handlers': ['sentry'],
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['sentry'],
+            'propagate': False,
+        },
+        'boto3.resources.collection': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'botocore.vendored.requests.packages.urllib3.connectionpool': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        }
+    },
 }
