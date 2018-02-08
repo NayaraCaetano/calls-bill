@@ -159,6 +159,9 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_CONTENT_ENCODING = 'utf-8'
 CELERY_TASK_ACKS_LATE = True
+CELERY_DEFAULT_QUEUE = 'work-at-olist-dev-celery'
+CELERY_ENABLE_REMOTE_CONTROL = False
+CELERY_SEND_EVENTS = False
 
 CELERY_BROKER_URL = 'sqs://{access_key}:{secret_key}@'.format(
     access_key=env('AWS_ACCESS_KEY'),
@@ -167,9 +170,5 @@ CELERY_BROKER_URL = 'sqs://{access_key}:{secret_key}@'.format(
 
 CELERY_BROKER_TRANSPORT_OPTIONS = {
     'region': 'sa-east-1',
-    'queue_name_prefix': 'work-at-olist'
+    'queue_name_prefix': 'work-at-olist-dev-'
 }
-
-CELERY_DEFAULT_QUEUE = 'work-at-olist'
-CELERY_ENABLE_REMOTE_CONTROL = False
-CELERY_SEND_EVENTS = False

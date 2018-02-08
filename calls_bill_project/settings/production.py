@@ -11,3 +11,5 @@ DATABASES['default'].update(db_from_env)
 
 
 CELERY_REMAP_SIGTERM = 'SIGQUIT celery -A calls_bill_project worker -l info'
+CELERY_DEFAULT_QUEUE = 'work-at-olist-celery'
+CELERY_BROKER_TRANSPORT_OPTIONS['queue_name_prefix'] = 'work-at-olist-'
