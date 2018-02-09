@@ -9,14 +9,6 @@ class TimestampField(serializers.DateTimeField):
     """
     Convert a django datetime to/from timestamp.
     """
-    def to_representation(self, value):
-        """
-        Convert the field to its internal representation (aka timestamp)
-        :param value: the DateTime value
-        :return: a UTC timestamp integer
-        """
-        result = datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
-        return result.timestamp()
 
     def to_internal_value(self, value):
         """

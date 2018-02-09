@@ -1,33 +1,35 @@
 from calls_bill_project.serializers import TimestampField
 
-from rest_framework import serializers
-
 from phonenumber_field.serializerfields import PhoneNumberField
 
+from rest_framework import serializers, validators
+
 from .models import Call
+from .tasks import save_call_record
 
 
-class CallSerializer(serializers.ModelSerializer):
-    pass
+class CallSerializer(serializers.Serializer):
+    call_id = serializers.CharField(required=True)
+
+    def save(self):
+        save_call_record.delay(self.validated_data)
 
 
 class CallDetailStartSerializer(CallSerializer):
-    id = serializers.CharField(source='start_id', required=True)
+    id = serializers.CharField(
+        source='start_id',
+        required=True,
+        validators=[validators.UniqueValidator(queryset=Call.objects.all())]
+    )
     timestamp = TimestampField(source='call_start', required=True)
-
-    class Meta:
-        model = Call
-        fields = ('id', 'timestamp', 'call_id', 'source', 'destination')
-        extra_kwargs = {
-            'source': {'required': True},
-            'destination': {'required': True}
-        }
+    source = PhoneNumberField(required=True)
+    destination = PhoneNumberField(required=True)
 
 
 class CallDetailEndSerializer(CallSerializer):
-    id = serializers.CharField(source='end_id', required=True)
+    id = serializers.CharField(
+        source='end_id',
+        required=True,
+        validators=[validators.UniqueValidator(queryset=Call.objects.all())]
+    )
     timestamp = TimestampField(source='call_end', required=True)
-
-    class Meta:
-        model = Call
-        fields = ('id', 'timestamp', 'call_id')
