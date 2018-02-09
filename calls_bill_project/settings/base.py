@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'calls_bill_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'call_bill',
+        'NAME': 'calls_bill',
     }
 }
 
@@ -159,7 +159,7 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_CONTENT_ENCODING = 'utf-8'
-CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_ACKS_LATE = True  # avoid record loss
 CELERY_DEFAULT_QUEUE = 'work-at-olist-dev-celery'
 CELERY_ENABLE_REMOTE_CONTROL = False
 CELERY_SEND_EVENTS = False
