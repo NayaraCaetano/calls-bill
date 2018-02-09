@@ -24,7 +24,7 @@ and calculates monthly bills for a given telephone number.
 The application is ready to deploy on Heroku with the following details:
 - Buildpacks
     - `heroku/python`
-    - `heroku/python`
+    - `https://github.com/heroku/heroku-buildpack-apt`
 - Continuous integration and deployment: run tests in circleci and, if successful,
 run deploy on Heroku.
 
