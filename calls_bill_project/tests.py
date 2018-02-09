@@ -1,7 +1,12 @@
 from django.test import TestCase
 
+from faker import Faker
+
+from rest_framework.test import APIClient
+
 
 class BaseTestCase(TestCase):
 
-    def test_example_circleci(self):
-        self.assertTrue(True)
+    def setUp(self):
+        self.client = APIClient()
+        self.faker = Faker('pt_BR')
