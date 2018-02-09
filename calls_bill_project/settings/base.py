@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
     #  project
     'calls_bill_project',
+    'call',
 ]
 
 MIDDLEWARE = [
