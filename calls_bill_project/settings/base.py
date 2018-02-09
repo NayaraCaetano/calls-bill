@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     #  other
     'django_celery_results',
+    'phonenumber_field',
     'raven.contrib.django.raven_compat',
     'rest_framework',
 
@@ -236,3 +237,6 @@ LOGGING = {
         }
     },
 }
+
+PHONENUMBER_DB_FORMAT = 'NATIONAL'
+PHONENUMBER_DEFAULT_REGION = 'BR'
