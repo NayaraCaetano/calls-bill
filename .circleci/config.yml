@@ -10,16 +10,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "calls_bill_project/requirements/pip-base.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "calls_bill_project/requirements/pip-dev.txt" }}
       - run:
           name: "Dependencies"
           command: |
             sudo pip install virtualenv
             python -m virtualenv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip install -r calls_bill_project/requirements/pip-dev.txt
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "calls_bill_project/requirements/pip-base.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "calls_bill_project/requirements/pip-dev.txt" }}
           paths:
             - "venv"
       - run:
