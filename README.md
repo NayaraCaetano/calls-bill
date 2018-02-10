@@ -98,12 +98,13 @@ Returns the detailed bill of a telephone number.
 {
    "subscriber":  // The subscriber phone number that originated the call;
    "period":  // The period of the bill
-   [
+   "total_cost": // Sum of calls cost
+   "detailed_cost": [
       {
         "destination": //The phone number receiving the call.
         "call_start_date":
         "call_start_time":
-        "call_curation": //(hour, minute and seconds): e.g. 0h35m42s
+        "call_duration": //(hour, minute and seconds): e.g. 0h35m42s
         "call_price":  // e.g. R$ 3,96"
       }
       ...
@@ -154,4 +155,3 @@ AWS_SECRET_KEY="{aws_secret_key_for_sqs}"
 6. **Initialize celery worker**
 
 - `celery -A calls_bill_project worker`
-

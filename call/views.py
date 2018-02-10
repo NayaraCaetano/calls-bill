@@ -1,7 +1,14 @@
-from rest_framework.generics import CreateAPIView
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import CreateAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .serializers import CallDetailStartSerializer, CallDetailEndSerializer
+from .models import Call
+
+from .serializers import (
+    CallDetailStartSerializer, CallDetailEndSerializer,
+    SubscriberBillSerializer
+)
 
 
 class CallDetailsView(CreateAPIView):
@@ -15,3 +22,12 @@ class CallDetailsView(CreateAPIView):
         raise ValidationError(
             'Incorrect param "type". Expected "start" or "end".'
         )
+
+
+class CallBillView(APIView):
+    serializer_class = SubscriberBillSerializer
+
+    def get(self, request):
+        serializer = self.serializer_class(data=request.query_params)
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.data)

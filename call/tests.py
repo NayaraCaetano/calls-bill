@@ -1,8 +1,9 @@
 import pytest
+import pytz
 
 from calls_bill_project.tests import BaseTestCase
 
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 from rest_framework.reverse import reverse_lazy
 
@@ -159,3 +160,88 @@ class CallDetailsTestCase(BaseTestCase):
                 call_end=datetime(2018, 1, 1, 11, 59)
             )
         self.assertEquals(AssertionError, excinfo.type)
+
+
+class CallBillTestCase(BaseTestCase):
+    URL = reverse_lazy('call_bill')
+
+    def _queryset_params(self, subscriber, period=''):
+        return {
+            'subscriber': subscriber,
+            'period': period
+        }
+
+    def setUp(self):
+        super(CallBillTestCase, self).setUp()
+        self._create_call(
+            source='3199999999',
+            call_start=pytz.utc.localize(datetime(2018, 1, 1, 21, 57, 13)),
+            call_end=pytz.utc.localize(datetime(2018, 1, 1, 22, 10, 56))
+        )
+        self._create_call(
+            source='3199999999',
+            call_start=pytz.utc.localize(datetime(2018, 1, 1, 5, 57, 13)),
+            call_end=pytz.utc.localize(datetime(2018, 1, 1, 6, 3, 15))
+        )
+        self._create_call(
+            source='3199999999',
+            call_start=pytz.utc.localize(datetime(2017, 12, 1, 5, 57, 13)),
+            call_end=pytz.utc.localize(datetime(2017, 12, 1, 6, 3, 15))
+        )
+        self._create_call(
+            source='31988888888',
+            call_start=pytz.utc.localize(datetime(2018, 1, 1, 5, 57, 13)),
+            call_end=pytz.utc.localize(datetime(2018, 1, 1, 6, 3, 15))
+        )
+
+    def test_url_does_not_have_auth(self):
+        response = self.client.get(self.URL)
+        self.assertNotEquals(401, response.status_code)
+
+    def test_url_does_not_have_post_method(self):
+        response = self.client.post(self.URL, {})
+        self.assertEquals(405, response.status_code)
+
+    def test_url_does_not_have_put_method(self):
+        response = self.client.put(self.URL)
+        self.assertEquals(405, response.status_code)
+
+    def test_url_des_not_have_delete_method(self):
+        response = self.client.delete(self.URL)
+        self.assertEquals(405, response.status_code)
+
+    def test_if_period_not_informed_the_last_month_is_considered(self):
+        response = self.client.get(self.URL, self._queryset_params(subscriber='3899999999'))
+        period = (date(date.today().year, date.today().month, 1) - timedelta(days=1)).strftime('%m/%Y')
+        self.assertEquals(period, response.json()['period'])
+
+    def test_it_is_not_possible_get_bill_for_current_month(self):
+        period = (date(date.today().year, date.today().month, 1)).strftime('%m/%Y')
+        response = self.client.get(self.URL, self._queryset_params(
+            subscriber='3899999999',
+            period=period
+        ))
+        self.assertEquals(400, response.status_code)
+
+    def test_detailed_cost_returns_correct_sum_of_costs(self):
+        response = self.client.get(self.URL, self._queryset_params(
+            subscriber='3199999999',
+            period='01/2018'
+        ))
+        self.assertEquals(1.17, float(response.json()['total_cost']))
+
+    def test_detailed_cost_only_return_costs_for_period(self):
+        response = self.client.get(self.URL, self._queryset_params(
+            subscriber='3199999999',
+            period='01/2018'
+        ))
+        detailed = response.json()['detailed_cost']
+        self.assertFalse(any(d['call_start_date'] != '01/2018' for d in detailed))
+
+    def test_detailed_cost_only_returns_details_for_subscriber(self):
+        response = self.client.get(self.URL, self._queryset_params(
+            subscriber='31988888888',
+            period='01/2018'
+        ))
+        detailed = response.json()['detailed_cost']
+        self.assertEquals(1, len(detailed))

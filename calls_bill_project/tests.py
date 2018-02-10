@@ -19,11 +19,9 @@ class BaseTestCase(TestCase):
         self.client = APIClient()
         self.faker = Faker('pt_BR')
 
-    def _create_call(self, *args, **kwargs):
         call_start = self.faker.date_time_between(datetime.now() - timedelta(days=1), datetime.now())
         call_end = self.faker.date_time_between(datetime.now(), datetime.now() + timedelta(days=1))
-
-        recipe = Recipe(
+        self._call_reciper = Recipe(
             Call,
             call_id=seq('id'),
             start_id=seq('start'),
@@ -33,5 +31,7 @@ class BaseTestCase(TestCase):
             source='3899999999',
             destination='3832222222'
         )
-        call = recipe.make(**kwargs)
+
+    def _create_call(self, *args, **kwargs):
+        call = self._call_reciper.make(**kwargs)
         call.save_cost()

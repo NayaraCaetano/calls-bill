@@ -22,3 +22,8 @@ class Call(models.Model):
     def save_cost(self):
         self.cost = calc_call_cust(self.call_start, self.call_end)
         self.save()
+
+    @property
+    def duration(self):
+        if self.call_end or self.call_start:
+            return self.call_end - self.call_start
