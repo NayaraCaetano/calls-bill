@@ -1,3 +1,5 @@
+import pytest
+
 from calls_bill_project.tests import BaseTestCase
 
 from datetime import datetime
@@ -112,9 +114,13 @@ class CallDetailsTestCase(BaseTestCase):
         response = self.client.post(self.URL, data)
         self.assertEquals(400, response.status_code)
 
-    def test_receive_call_pair_must_calculate_bill(self):
-        date_start = datetime(year=2018, month=1, day=1, hour=21, minute=57, second=13)
-        date_end = datetime(year=2018, month=1, day=1, hour=22, minute=10, second=56)
+    @parameterized.expand([
+        (datetime(2018, 1, 1, 21, 57, 13), datetime(2018, 1, 1, 22, 10, 56), 0.54),
+        (datetime(2018, 1, 1, 5, 57, 13), datetime(2018, 1, 1, 6, 3, 15), 0.63),
+        (datetime(2018, 1, 1, 6, 1, 0), datetime(2018, 1, 1, 6, 3, 15), 0.54),
+        (datetime(2018, 1, 1, 5, 57, 0), datetime(2018, 1, 1, 22, 1, 15), 86.76)
+    ])
+    def test_receive_call_pair_must_calculate_bill(self, date_start, date_end, cost):
         data_start = self._json_call(
             type_call='start',
             timestamp=str(date_start.timestamp()),
@@ -130,7 +136,7 @@ class CallDetailsTestCase(BaseTestCase):
         self.client.post(self.URL, data_end)
 
         obj = Call.objects.get(call_id=data_start['call_id'])
-        self.assertEquals(0.54, float(obj.cost))
+        self.assertEquals(cost, float(obj.cost))
 
     @parameterized.expand(['start', 'end'])
     def test_sending_duplicate_record_must_not_duplicate_on_database(self, type_call):
@@ -138,3 +144,18 @@ class CallDetailsTestCase(BaseTestCase):
         self.client.post(self.URL, data)
         self.client.post(self.URL, data)
         self.assertEquals(1, Call.objects.all().count())
+
+    def test_calc_cost_does_not_run_if_date_start_or_date_end_is_missing(self):
+        with pytest.raises(Exception) as excinfo:
+            self._create_call(
+                call_end=None
+            )
+        self.assertEquals(AssertionError, excinfo.type)
+
+    def test_calc_cost_does_not_run_if_date_end_is_earlier_than_date_start(self):
+        with pytest.raises(Exception) as excinfo:
+            self._create_call(
+                call_start=datetime(2018, 1, 1, 12, 0),
+                call_end=datetime(2018, 1, 1, 11, 59)
+            )
+        self.assertEquals(AssertionError, excinfo.type)

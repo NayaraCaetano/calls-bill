@@ -20,7 +20,5 @@ class Call(models.Model):
         max_digits=10, decimal_places=2, blank=True, null=True)
 
     def save_cost(self):
-        if not self.call_start or not self.call_end:
-            raise AttributeError('No enough data')
         self.cost = calc_call_cust(self.call_start, self.call_end)
         self.save()

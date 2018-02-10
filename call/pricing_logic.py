@@ -13,6 +13,9 @@ RULES = [
 def calc_call_cust(start, end):
     cost = STANDING_CHARGE
     calls_day = _format_call_in_days_records(start, end)
+
+    _validate_date_interval(start, end)
+
     for call in calls_day:
         for rule in RULES:
             duration_minutes = _get_rule_duration(
@@ -20,6 +23,13 @@ def calc_call_cust(start, end):
             )
             cost = cost + (duration_minutes * rule['price'])
     return cost
+
+
+def _validate_date_interval(start, end):
+    if not start or not end:
+        raise AssertionError('No enough data')
+    if start > end:
+        raise AssertionError('Date end is earlier than date start')
 
 
 def _format_call_in_days_records(start, end):
