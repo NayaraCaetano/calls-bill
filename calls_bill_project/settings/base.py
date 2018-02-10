@@ -48,11 +48,13 @@ INSTALLED_APPS = [
 
     #  other
     'django_celery_results',
+    'phonenumber_field',
     'raven.contrib.django.raven_compat',
     'rest_framework',
 
     #  project
     'calls_bill_project',
+    'call',
 ]
 
 MIDDLEWARE = [
@@ -151,11 +153,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
-    )
+    ),
 }
 
 CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_CONTENT_ENCODING = 'utf-8'
@@ -174,64 +176,5 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
     'queue_name_prefix': 'work-at-olist-dev-'
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format': '%(asctime)s %(name)s - %(levelname)s'
-                      ' - %(process)d - %(thread)d - %(message)s',
-        },
-        'simple': {
-            'format': '%(levelname)s %(name)s %(message)s',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat'
-                     '.handlers.SentryHandler',
-        },
-    },
-    'loggers': {
-        'root': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-        },
-        'oc.storage': {
-            'level': 'INFO',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'tasks': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'celery': {
-            'level': 'ERROR',
-            'handlers': ['sentry'],
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'level': 'ERROR',
-            'handlers': ['sentry'],
-            'propagate': False,
-        },
-        'boto3.resources.collection': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'botocore.vendored.requests.packages.urllib3.connectionpool': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
-        }
-    },
-}
+PHONENUMBER_DB_FORMAT = 'NATIONAL'
+PHONENUMBER_DEFAULT_REGION = 'BR'

@@ -4,9 +4,11 @@ celery==4.1.0
 django-celery-results==1.0.1
 dj-database-url==0.4.2
 django-environ==0.4.4
+django-phonenumber-field==2.0.0
 Django==2.0.1
 djangorestframework==3.7.7
 psycopg2==2.7.3.1
 pycurl==7.43.0.1
+pytz==2017.3
 raven==6.5.0
 whitenoise==3.3.1
