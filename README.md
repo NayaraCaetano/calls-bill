@@ -6,8 +6,7 @@
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7bfc7b0f007441ac5a74/test_coverage)](https://codeclimate.com/github/NayaraCaetano/work-at-olist/test_coverage)
 
-Python application that receives call detail records
-and calculates monthly bills for a given telephone number.
+Python application that receives data on call records and calculates monthly bills for a given telephone number.
 
 
 ## Environment (main tools)
@@ -25,17 +24,17 @@ The application is ready to deploy on Heroku with the following details:
 - Buildpacks
     - `heroku/python`
     - `https://github.com/heroku/heroku-buildpack-apt`
-- Continuous integration and deployment: run tests in circleci and, if successful,
-run deploy on Heroku.
+- Continuous integration and deployment: run tests in CircleCI and, if successful,
+deploy on Heroku.
 
-Obs: Uses Honcho to run multiple processes (celery and gunicorn) in a single dyno.
+Obs: It uses Honcho to run multiple processes (Celery and Gunicorn) in a single dyno.
 
 
 ## Quality tools
 
 - Sentry is configured to report production errors
-- CircleCI is configured to run tests and upload coverage in Codeclimate
-- Codeclimate is configured to check code quality and show code coverage
+- CircleCI is configured to run tests and upload coverage in Code Climate
+- Code Climate is configured to check the code quality and present code coverage
 
 
 ## Api documentation
@@ -45,7 +44,7 @@ Provides a HTTP REST API with the following endpoints:
 
 ### Call Detail
 
-Receives call details, saving on database.
+Receives call details, saving them on database.
 
 - URL: `{base_url}/call/details
 - HTTP request type: `POST`
@@ -78,7 +77,7 @@ Receives call details, saving on database.
 ```
 
 Obs:
-- If the record is sent more than once, the api will not save again on database
+- If the record is sent more than once, the api will not save it again on database
 - If only one type of call was sent, api will consider the total cost as `None`
 
 

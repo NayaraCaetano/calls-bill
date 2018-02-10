@@ -11,14 +11,14 @@ from .models import Call
 from .tasks import save_call_record
 
 
-class CallSerializer(serializers.Serializer):
+class CallDetailBaseSerializer(serializers.Serializer):
     call_id = serializers.CharField(required=True)
 
     def save(self):
         save_call_record.delay(self.validated_data)
 
 
-class CallDetailStartSerializer(CallSerializer):
+class CallDetailStartSerializer(CallDetailBaseSerializer):
     id = serializers.CharField(
         source='start_id',
         required=True,
@@ -29,7 +29,7 @@ class CallDetailStartSerializer(CallSerializer):
     destination = PhoneNumberField(required=True)
 
 
-class CallDetailEndSerializer(CallSerializer):
+class CallDetailEndSerializer(CallDetailBaseSerializer):
     id = serializers.CharField(
         source='end_id',
         required=True,
