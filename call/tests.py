@@ -130,7 +130,7 @@ class CallDetailsTestCase(BaseTestCase):
         self.client.post(self.URL, data_end)
 
         obj = Call.objects.get(call_id=data_start['call_id'])
-        self.assertEquals(0.54, obj.cost)
+        self.assertEquals(0.54, float(obj.cost))
 
     @parameterized.expand(['start', 'end'])
     def test_sending_duplicate_record_must_not_duplicate_on_database(self, type_call):
