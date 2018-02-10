@@ -1,3 +1,4 @@
 -r pip-base.txt
 
 gunicorn==19.7.1
+honcho==0.5.0
