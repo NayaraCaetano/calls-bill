@@ -33,7 +33,7 @@ jobs:
             . venv/bin/activate
             ./cc-test-reporter before-build
             pytest --ignore=venv/ --junitxml=unit_test_results.xml --cov
-            coverage xml --omit venv/**,**/migrations/**,**/settings/**
+            coverage xml --omit venv/**,**/migrations/**,**/settings/**,**/tests.py
       - run:
           name: "Send coverage data"
           command: |
