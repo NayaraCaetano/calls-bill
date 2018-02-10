@@ -12,5 +12,4 @@ class CallDetailsView(CreateAPIView):
             return CallDetailStartSerializer
         elif type_call.lower() == 'end':
             return CallDetailEndSerializer
-        #return CallDetailStartSerializer
         raise ValidationError('Incorrect param "type". Expected "start" or "end".')
