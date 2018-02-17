@@ -25,5 +25,5 @@ class Call(models.Model):
 
     @property
     def duration(self):
-        if self.call_end or self.call_start:
+        if self.call_end and self.call_start:
             return self.call_end - self.call_start
