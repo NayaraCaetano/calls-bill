@@ -34,4 +34,6 @@ class BaseTestCase(TestCase):
 
     def _create_call(self, *args, **kwargs):
         call = self._call_reciper.make(**kwargs)
-        call.save_cost()
+        if call.call_start and call.call_end:
+            call.save_cost()
+        return call
