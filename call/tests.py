@@ -161,6 +161,27 @@ class CallDetailsTestCase(BaseTestCase):
             )
         self.assertEquals(AssertionError, excinfo.type)
 
+    @parameterized.expand([
+        (datetime(2018, 1, 1, 22, 57, 13), datetime(2018, 1, 1, 20, 10, 56))
+    ])
+    def test_must_refuse_date_end_earlyer_than_date_start(self, date_start, date_end):
+        data_start = self._json_call(
+            type_call='start',
+            timestamp=str(date_start.timestamp()),
+            call_id='1'
+        )
+        data_end = self._json_call(
+            type_call='end',
+            timestamp=str(date_end.timestamp()),
+            call_id='1'
+        )
+
+        self.client.post(self.URL, data_start)
+        response = self.client.post(self.URL, data_end)
+
+        self.assertEquals(400, response.status_code)
+
+
 
 class CallBillTestCase(BaseTestCase):
     URL = reverse_lazy('call_bill')
