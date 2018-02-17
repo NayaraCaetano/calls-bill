@@ -24,4 +24,4 @@ class TimestampField(serializers.DateTimeField):
 
         converted = datetime.utcfromtimestamp(float(value))
         converted = pytz.utc.localize(converted)
-        return super(TimestampField, self).to_representation(converted)
+        return super(TimestampField, self).to_internal_value(converted)

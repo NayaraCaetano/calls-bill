@@ -17,6 +17,15 @@ class CallDetailBaseSerializer(serializers.Serializer):
     def save(self):
         save_call_record.delay(self.validated_data)
 
+    def validate(self, data):
+        instance = Call.objects.filter(call_id=data['call_id'])
+        if instance:
+            date_start = instance[0].call_start or data['call_start']
+            date_end = instance[0].call_end or data['call_end']
+            if date_start > date_end:
+                raise serializers.ValidationError('Date end is earlier than date start')
+        return data
+
 
 class CallDetailStartSerializer(CallDetailBaseSerializer):
     id = serializers.CharField(
