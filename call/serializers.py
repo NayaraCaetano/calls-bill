@@ -73,6 +73,7 @@ class SubscriberBillSerializer(serializers.Serializer):
             source=data['subscriber'],
             call_start__year=data['period'].year,
             call_start__month=data['period'].month,
+            call_end__isnull=False
         )
 
     def get_total_cost(self, data):
