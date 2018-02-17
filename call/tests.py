@@ -148,9 +148,11 @@ class CallDetailsTestCase(BaseTestCase):
 
     def test_calc_cost_does_not_run_if_date_start_or_date_end_is_missing(self):
         with pytest.raises(Exception) as excinfo:
-            self._create_call(
-                call_end=None
-            )
+            call = self._create_call()
+            call.call_end = None
+            call.end_id = None
+            call.save()
+            call.save_cost()
         self.assertEquals(AssertionError, excinfo.type)
 
     def test_calc_cost_does_not_run_if_date_end_is_earlier_than_date_start(self):
@@ -160,6 +162,26 @@ class CallDetailsTestCase(BaseTestCase):
                 call_end=datetime(2018, 1, 1, 11, 59)
             )
         self.assertEquals(AssertionError, excinfo.type)
+
+    @parameterized.expand([
+        (datetime(2018, 1, 1, 22, 57, 13), datetime(2018, 1, 1, 20, 10, 56))
+    ])
+    def test_must_refuse_date_end_earlyer_than_date_start(self, date_start, date_end):
+        data_start = self._json_call(
+            type_call='start',
+            timestamp=str(date_start.timestamp()),
+            call_id='1'
+        )
+        data_end = self._json_call(
+            type_call='end',
+            timestamp=str(date_end.timestamp()),
+            call_id='1'
+        )
+
+        self.client.post(self.URL, data_start)
+        response = self.client.post(self.URL, data_end)
+
+        self.assertEquals(400, response.status_code)
 
 
 class CallBillTestCase(BaseTestCase):
@@ -245,3 +267,16 @@ class CallBillTestCase(BaseTestCase):
         ))
         detailed = response.json()['detailed_cost']
         self.assertEquals(1, len(detailed))
+
+    def test_incomplete_calls_records_isnt_returned(self):
+        self._create_call(
+            source='31977888888',
+            call_start=pytz.utc.localize(datetime(2018, 1, 1, 5, 57, 13)),
+            call_end=None
+        )
+        response = self.client.get(self.URL, self._queryset_params(
+            subscriber='31977888888',
+            period='01/2018'
+        ))
+        detailed = response.json()['detailed_cost']
+        self.assertEquals(0, len(detailed))
